@@ -1,6 +1,9 @@
 const express = require("express");
 
 const app = express();
+const { adminAuth } = require("./Middlewares/auth");
+const { userAuth } = require("./Middlewares/auth");
+app.use("/best", adminAuth); // middleware function to be applied to all routes under /best
 
 app.get(
   "/best",
@@ -13,14 +16,14 @@ app.get(
     // res.send("handler 2");
   },
   (req, res) => {
-    // res.send("handler 3");
+    res.send("handler 3");
   },
   (req, res) => {
     res.send("handler 4");
   }
 );
 
-app.post("/best", (req, res) => {
+app.post("/user", userAuth, (req, res) => {
   res.send("sent success using post");
 });
 
