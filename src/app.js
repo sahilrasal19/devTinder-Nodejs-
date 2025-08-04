@@ -1,41 +1,29 @@
 const express = require("express");
-
+const connectDB = require("./config/database");
 const app = express();
-const { adminAuth } = require("./Middlewares/auth");
-const { userAuth } = require("./Middlewares/auth");
-app.use("/best", adminAuth); // middleware function to be applied to all routes under /best
-
-app.get(
-  "/best",
-  (req, res, next) => {
-    next();
-    // res.send("sent success using get");
-  },
-  (req, res, next) => {
-    next();
-    // res.send("handler 2");
-  },
-  (req, res) => {
-    res.send("handler 3");
-  },
-  (req, res) => {
-    res.send("handler 4");
+const User = require("./models/user");
+app.post("/signup", async (req, res) => {
+  const user = new User({
+    firstName: "Sahil",
+    lastName: "Rasal",
+    email: "sahil@gmail.com",
+    password: "sahil123",
+  });
+  try {
+    await user.save();
+    res.send("User created");
+  } catch (err) {
+    res.status(500).send("Error saving the user" + err.message);
   }
-);
-
-app.post("/user", userAuth, (req, res) => {
-  res.send("sent success using post");
 });
 
-app.use("/test/:username/:password", (req, res) => {
-  console.log(req.params);
-  res.send("hello test");
-});
-
-app.use("/", (req, res) => {
-  res.send("hello brother");
-});
-
-app.listen(7777, () => {
-  console.log("server is running successfully on 7777");
-});
+connectDB()
+  .then(() => {
+    console.log("Database connection established");
+    app.listen(7777, () => {
+      console.log("server is running successfully on 7777");
+    });
+  })
+  .catch((err) => {
+    console.error("Database is not connected");
+  });
