@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = mongoose.Schema(
   {
@@ -22,6 +23,9 @@ const userSchema = mongoose.Schema(
       trim: true,
       minLength: 5,
       maxLength: 100,
+      validate(value) {
+        if (!validator.isEmail(value)) throw new Error("Invalid Email");
+      },
     },
     password: {
       type: String,
@@ -29,6 +33,10 @@ const userSchema = mongoose.Schema(
       unique: true,
       minLength: 8,
       maxLength: 100,
+      validate(value) {
+        if (!validator.isStrongPassword(value))
+          throw new Error("Weak Password, Please use a strong password");
+      },
     },
     age: {
       type: Number,
@@ -46,7 +54,10 @@ const userSchema = mongoose.Schema(
     },
     photoUrl: {
       type: String,
-      default: "default photo hai ye yaha url daal sakte hai",
+      default: "www.yotube.com",
+      validate(value) {
+        if (!validator.isURL(value)) throw new Error("Invalid URL");
+      },
     },
     about: {
       type: String,

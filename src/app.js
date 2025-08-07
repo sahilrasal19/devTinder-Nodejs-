@@ -43,7 +43,7 @@ app.patch("/user/:id", async (req, res) => {
     runValidators: true,
   });
   try {
-    const ALLOWED_UPDATES = ["skills", "about", "age", "gender"];
+    const ALLOWED_UPDATES = ["skills", "about", "age", "gender", "photoUrl"];
     const isAllowedUpdates = Object.keys(data).every((k) =>
       ALLOWED_UPDATES.includes(k)
     );
