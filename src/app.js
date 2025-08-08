@@ -2,8 +2,48 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
+const { validateSignupData } = require("./utils/validation");
+const bcrypt = require("bcrypt");
 
 app.use(express.json());
+
+app.post("/signup", async (req, res) => {
+  try {
+    const { firstName, lastName, emailId, password } = req.body;
+    validateSignupData(req);
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: hashedPassword,
+    });
+
+    await user.save();
+    res.send("User created successfully");
+  } catch (err) {
+    res.status(500).send("ERROR: " + err.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("Invalid credentials");
+    }
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (isValidPassword) {
+      res.send("Login successful");
+    } else {
+      throw new Error("Invalid credentials");
+    }
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
+});
 
 app.get("/user", async (req, res) => {
   console.log(req.body.emailId);
@@ -59,22 +99,11 @@ app.patch("/user/:id", async (req, res) => {
   }
 });
 
-app.post("/signup", async (req, res) => {
-  console.log(req.body);
-  const user = new User(req.body);
-  try {
-    await user.save();
-    res.send("User created");
-  } catch (err) {
-    res.status(500).send("Error saving the user" + err.message);
-  }
-});
-
 connectDB()
   .then(() => {
     console.log("Database connection established");
     app.listen(7777, () => {
-      console.log("server is running successfully on 7777");
+      console.log("Server is running successfully on 7777");
     });
   })
   .catch((err) => {

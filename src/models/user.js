@@ -30,7 +30,7 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true,
       minLength: 8,
       maxLength: 100,
       validate(value) {
@@ -40,12 +40,12 @@ const userSchema = mongoose.Schema(
     },
     age: {
       type: Number,
-      required: true,
+      // required: true,
       min: 18,
     },
     gender: {
       type: String,
-      required: true,
+      // required: true,
       validate(value) {
         if (!["male", "female", "others"].includes(value)) {
           throw new Error("Invalid gender");
