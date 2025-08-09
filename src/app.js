@@ -4,8 +4,10 @@ const app = express();
 const User = require("./models/user");
 const { validateSignupData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   try {
@@ -36,12 +38,23 @@ app.post("/login", async (req, res) => {
     }
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (isValidPassword) {
+      // const { token } = req.cookies;
+      res.cookie("token", "habshbckjbsudyhvchdzhjbhdbcwb");
+      // console.log(req.cookies.token);
       res.send("Login successful");
     } else {
       throw new Error("Invalid credentials");
     }
   } catch (err) {
     res.status(400).send("ERROR: " + err.message);
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  const { token } = req.cookies;
+  console.log(req.cookies);
+  res.send(" Welcome to your profile");
+  if (token) {
   }
 });
 
