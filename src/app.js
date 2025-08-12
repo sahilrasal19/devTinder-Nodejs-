@@ -6,6 +6,7 @@ const { validateSignupData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("./Middlewares/auth");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -54,20 +55,21 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const { token } = req.cookies;
+    // const { token } = req.cookies;
     // console.log(jsonWebToken);
 
     // res.send(" Welcome to your profile");
-    if (!token) {
-      throw new Error("Invalid Token");
-    }
-    const decodedValue = await jwt.verify(token, "DEV@Tinder742");
-    console.log(decodedValue);
-    const { _id } = decodedValue;
-    console.log("Logged In user is: " + _id);
-    const user = await User.findById(_id);
+    // if (!token) {
+    //   throw new Error("Invalid Token");
+    // }
+    // const decodedValue = await jwt.verify(token, "DEV@Tinder742");
+    // console.log(decodedValue);
+    // const { _id } = decodedValue;
+    // console.log("Logged In user is: " + _id);
+    // const user = await User.findById(_id);
+    const user = req.user;
     res.send(user);
   } catch (err) {
     res.status(400).send("ERROR: " + err.message);
