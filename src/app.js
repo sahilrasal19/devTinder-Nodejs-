@@ -38,12 +38,13 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid credentials");
     }
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await user.validatePassword(password);
     if (isValidPassword) {
       // const { token } = req.cookies;
 
       // console.log(req.cookies.token);
-      const token = await jwt.sign({ _id: user._id }, "DEV@Tinder742"); // creating a token
+      // const token = await jwt.sign({ _id: user._id }, "DEV@Tinder742"); // creating a token
+      const token = await user.getJWT();
       console.log(token);
       res.cookie("token", token); // send token to postman/browser/client
       res.send("Login successful");
